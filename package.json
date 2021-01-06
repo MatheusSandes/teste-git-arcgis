@@ -1,0 +1,23 @@
+{
+  "name": "teste-git-arcgis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatheusSandes/teste-git-arcgis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MatheusSandes/teste-git-arcgis/issues"
+  },
+  "homepage": "https://github.com/MatheusSandes/teste-git-arcgis#readme",
+  "dependencies": {
+    "ejs": "^3.1.5",
+    "express": "^4.17.1"
+  }
+}
