@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>
+      Popup with edit action | Sample | ArcGIS API for JavaScript 4.18
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.18/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.18/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #info {
+        padding: 14px;
+        border-radius: 5px;
+        width: 25%;
+      }
+    </style>
+    <script>
+      require([
+        "esri/Map",
+        "esri/WebMap",
+        "esri/layers/FeatureLayer",
+        "esri/widgets/Editor",
+        "esri/views/MapView",
+        "esri/widgets/Expand",
+        "esri/widgets/LayerList"
+      ], function (
+        Map,
+        WebMap,
+        FeatureLayer,
+        Editor,
+        MapView,
+        Expand,
+        LayerList
+      ) {
+        // Create the Map
+        let webmap = new WebMap({
+          portalItem: {
+            id: "8283f3f13d014a9ea3ebf708a525500e"
+          }
+        });
+
+        
+        const editThisAction = {
+          title: "Edit feature",
+          id: "edit-this",
+          className: "esri-icon-edit"
+        };
+
+        // Create a popupTemplate for the featurelayer and pass in a function to set its content and specify an action to handle editing the selected feature
+        var template = {
+          "title": "{municipio}",
+          "content":
+            "A cidade de {municipio} possui população de {populacao} de habitantes, idhm de {idhm} e pib de {pib}.",
+          actions: [editThisAction]
+          }
+
+        
+
+        // Create the MapView
+        const view = new MapView({
+          container: "viewDiv",
+          map: webmap,
+          //popup: {
+            //autoOpenEnabled : false
+          //}
+        });
+
+        const featureLayer = new FeatureLayer({
+          url:
+            "https://services5.arcgis.com/2s9Bh38daAZ4xeyJ/arcgis/rest/services/layerEdit/FeatureServer",
+          outFields: ["*"],
+          popupTemplate: template
+        });
+        webmap.add(featureLayer);
+
+        view.ui.add(
+          [
+            new Expand({
+              content: new LayerList({ view: view }),
+              view: view,
+              group: "top-left"
+            }),
+            
+          ],
+          "top-left"
+        );
+
+        view.when(function () {
+          // Create the Editor with the specified layer and a list of field configurations
+          editor = new Editor({
+            view: view,
+            container: document.createElement("div"),
+          });
+
+          // Execute each time the "Edit feature" action is clicked
+          function editThis() {
+              editor.startUpdateWorkflowAtFeatureEdit(
+                view.popup.selectedFeature
+              );
+              view.ui.add(editor, "top-right");
+          }
+
+          // Event handler that fires each time an action is clicked
+          view.popup.on("trigger-action", function (event) {
+            if (event.action.id === "edit-this") {
+              editThis();
+            }
+          });
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <div id="info" class="esri-widget">
+      <h3>Select a feature to display its popup</h3>
+      <h4>
+        Edit the feature by clicking on the "Edit feature" action within the
+        popup.
+      </h4>
+    </div>
+  </body>
+</html>

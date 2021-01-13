@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <title>
+      Edição de Informações
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.18/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.18/"></script>
+
+    <style>
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .esri-editor .esri-item-list__scroller {
+        max-height: 350px;
+      }
+    </style>
+
+    <script>
+      require([
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/widgets/Editor",
+        "esri/widgets/LayerList",
+        "esri/widgets/BasemapGallery",
+        "esri/widgets/Legend",
+        "esri/widgets/Expand"
+      ], function (WebMap, MapView, Editor, LayerList, BasemapGallery, Legend, Expand) {
+        // Create a map from the referenced webmap item id
+        let webmap = new WebMap({
+          portalItem: {
+            id: "8283f3f13d014a9ea3ebf708a525500e"
+          }
+        });
+
+        let view = new MapView({
+          container: "map",
+          map: webmap
+        });
+
+        view.ui.add(
+          [
+            new Expand({
+              content: new Legend({
+                view: view
+              }),
+              view: view,
+              group: "top-left"
+            }),
+            new Expand({
+              content: new LayerList({ view: view }),
+              view: view,
+              group: "top-left"
+            }),
+            new Expand({
+              content: new BasemapGallery({
+                view: view
+              }),
+              view: view,
+              expandIconClass: "esri-icon-basemap",
+              group: "top-left"
+              
+            }),
+          ],
+          "top-left"
+        );
+
+        view.when(function () {
+          // Create the Editor
+          let editor = new Editor({
+            view: view
+          });
+
+          // Add widget to top-right of the view
+          view.ui.add(editor, "top-right");
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-sm bg-primary navbar-light">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/edit">Edit</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/print">Print</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="map"></div>
+    <div id="editorDiv"></div>
+  </body>
+</html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <title>
+      Edição de Informações
+    </title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.18/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.18/"></script>
+
+    <style>
+      html,
+      body,
+      #map {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .esri-editor .esri-item-list__scroller {
+        max-height: 350px;
+      }
+    </style>
+
+    <script>
+      require([
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/widgets/Editor",
+        "esri/widgets/LayerList",
+        "esri/widgets/BasemapGallery",
+        "esri/widgets/Legend",
+        "esri/widgets/Expand",
+        "esri/layers/Layer",
+        "esri/popup/content/AttachmentsContent",
+        "esri/popup/content/TextContent"
+      ], function (WebMap, MapView, Editor, LayerList, BasemapGallery, Legend, Expand, Layer,  AttachmentsContent, TextContent) {
+        // Create a map from the referenced webmap item id
+        let webmap = new WebMap({
+          portalItem: {
+            id: "8283f3f13d014a9ea3ebf708a525500e"
+          }
+        });
+
+        let view = new MapView({
+          container: "map",
+          map: webmap
+          
+        });
+
+        const editThisAction = {
+          title: "Edit feature",
+          id: "edit-this",
+          className: "esri-icon-edit"
+        };
+
+        var popupTemplate = {
+          "title": "{municipio}",
+          "content": function(){
+            "Aaaaaaaaaaaaaaa cidade de {municipio} possui população de {populacao} de habitantes, idhm de {idhm} e pib de {pib}."
+          },
+          actions: [editThisAction]
+          }
+
+        view.when(function(){
+          const featureLayer= webmap.layers.getItemAt(0);
+          featureLayer.outFields=["*"]
+
+        featureLayer.pop =popupTemplate;
+        })
+        
+
+        view.ui.add(
+          [
+            new Expand({
+              content: new Legend({
+                view: view
+              }),
+              view: view,
+              group: "top-left"
+            }),
+            new Expand({
+              content: new LayerList({ view: view }),
+              view: view,
+              group: "top-left"
+            }),
+            new Expand({
+              content: new BasemapGallery({
+                view: view
+              }),
+              view: view,
+              expandIconClass: "esri-icon-basemap",
+              group: "top-left"
+              
+            }),
+          ],
+          "top-left"
+        );
+
+        view.when(function () {
+          // Create the Editor
+          let editor = new Editor({
+            view: view
+          });
+
+          // Add widget to top-right of the view
+          view.ui.add(editor, "top-right");
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-sm bg-primary navbar-light">
+      <ul class="navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-map" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15.817.113A.5.5 0 0 1 16 .5v14a.5.5 0 0 1-.402.49l-5 1a.502.502 0 0 1-.196 0L5.5 15.01l-4.902.98A.5.5 0 0 1 0 15.5v-14a.5.5 0 0 1 .402-.49l5-1a.5.5 0 0 1 .196 0L10.5.99l4.902-.98a.5.5 0 0 1 .415.103zM10 1.91l-4-.8v12.98l4 .8V1.91zm1 12.98l4-.8V1.11l-4 .8v12.98zm-6-.8V1.11l-4 .8v12.98l4-.8z"/>
+            </svg></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/edit">Edit</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/print">Print</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="map"></div>
+    <div id="editorDiv"></div>
+  </body>
+</html>
